@@ -42,7 +42,7 @@ pipeline {
     }
 
     post {
-        always {
+        success {
             emailext(
                 subject: "✅ SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
                 mimeType: 'text/html',
@@ -51,7 +51,24 @@ pipeline {
                     <p><b>Job:</b> ${JOB_NAME}</p>
                     <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
                     <p><b>Status:</b> SUCCESS</p>
-                    <p><b>Docker Image:</b> ${IMAGE_NAME}</p>
+                    <p>
+                        <b>Build URL:</b>
+                        <a href="${BUILD_URL}">${BUILD_URL}</a>
+                    </p>
+                """,
+                to: "erdigvijaypatil01@gmail.com"
+            )
+        }
+
+        failure {
+            emailext(
+                subject: "❌ FAILURE: ${JOB_NAME} #${BUILD_NUMBER}",
+                mimeType: 'text/html',
+                body: """
+                    <h2 style="color:red;">Build Failed ⚠️</h2>
+                    <p><b>Job:</b> ${JOB_NAME}</p>
+                    <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
+                    <p><b>Status:</b> FAILURE</p>
                     <p>
                         <b>Build URL:</b>
                         <a href="${BUILD_URL}">${BUILD_URL}</a>
@@ -61,4 +78,5 @@ pipeline {
             )
         }
     }
+
 }
