@@ -12,7 +12,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-creds-4eks',  // Update ID that we used in jenkins credentials where we have set aws keys
+                    credentialsId: 'aws-creds-4eks',  // Jenkins credential ID with AWS keys
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
@@ -42,11 +42,23 @@ pipeline {
     }
 
     post {
-        success {
-            echo "✅ Namespace '${K8S_NAMESPACE}' is ready"
-        }
-        failure {
-            echo "❌ Namespace creation failed"
+        always {
+            emailext(
+                subject: "✅ SUCCESS: ${JOB_NAME} #${BUILD_NUMBER}",
+                mimeType: 'text/html',
+                body: """
+                    <h2 style="color:green;">Build Successful 🎉</h2>
+                    <p><b>Job:</b> ${JOB_NAME}</p>
+                    <p><b>Build Number:</b> ${BUILD_NUMBER}</p>
+                    <p><b>Status:</b> SUCCESS</p>
+                    <p><b>Docker Image:</b> ${IMAGE_NAME}</p>
+                    <p>
+                        <b>Build URL:</b>
+                        <a href="${BUILD_URL}">${BUILD_URL}</a>
+                    </p>
+                """,
+                to: "erdigvijaypatil01@gmail.com"
+            )
         }
     }
 }
