@@ -3,22 +3,31 @@ pipeline {
 
     environment {
         K8S_NAMESPACE = "automotive"
+        AWS_DEFAULT_REGION = "us-east-1"
     }
 
     stages {
 
         stage('Create Namespace') {
             steps {
-                sh """
-                  kubectl apply -f namespace.yaml
-                """
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds-4eks',  // Updated ID
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh """
+                        aws eks update-kubeconfig --name automotive-cluster --region $AWS_DEFAULT_REGION
+                        kubectl apply -f namespace.yaml
+                    """
+                }
             }
         }
 
         stage('Verify Namespace') {
             steps {
                 sh """
-                  kubectl get namespace ${K8S_NAMESPACE}
+                    kubectl get namespace ${K8S_NAMESPACE}
                 """
             }
         }
