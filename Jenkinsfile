@@ -26,11 +26,19 @@ pipeline {
 
         stage('Verify Namespace') {
             steps {
-                sh """
-                    kubectl get namespace ${K8S_NAMESPACE}
-                """
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-creds-4eks',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh """
+                        kubectl get namespace ${K8S_NAMESPACE}
+                    """
+                }
             }
         }
+
     }
 
     post {
