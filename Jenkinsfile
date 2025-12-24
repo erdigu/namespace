@@ -12,7 +12,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws-creds-4eks',  // Update ID that we used in jenkins credentials
+                    credentialsId: 'aws-creds-4eks',  // Update ID that we used in jenkins credentials where we have set aws keys
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                 ]]) {
